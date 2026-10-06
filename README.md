@@ -1,0 +1,2 @@
+# appliedMathematicsEngineeringExperiments
+大学の授業数理工学実験の課題のコード
