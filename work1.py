@@ -19,31 +19,31 @@ def forward_eraser(A, b): #行列A、ベクトルbを引数にとる
 
 #漸化式（２）
 
-def gaussian_elimination_i(i, n_index, Ab_prime):   #i番目の解を求める
+def gaussian_elimination_i(i, x, Ab_prime):   #i番目の解を求める（x[i+1:]は求め済み）
+    n = Ab_prime.shape[0]
     sum_aijxj = 0
-    for j in range(i+1,(2**n_index)*100):
-      if j>=n: break
-      sum_aijxj += Ab_prime[i][j]*gaussian_elimination_i(j, n_index, Ab_prime)
-    x_i = (1/Ab_prime[i][i]) * (Ab_prime[(2**n_index)*100] - sum_aijxj)
+    for j in range(i+1, n):
+        sum_aijxj += Ab_prime[i][j] * x[j]
+    x_i = (1/Ab_prime[i][i]) * (Ab_prime[i][n] - sum_aijxj)
     return x_i
 
 
 X_n =[]
 
-for n in range(len([100, 200, 400, 800])):
+for n_index in range(len(Ab)):
+    X_n_list = []
     for i in range(100):
-        A = Ab[n][i][0]
-        b = Ab[n][i][1]
+        A = Ab[n_index][i][0]
+        b = Ab[n_index][i][1]
         Ab_prime = forward_eraser(A, b)
         #Ab_primeを準備した。あとは漸化式に入れるだけ
-        real_n = Ab_prime[(2**n_index)*100]
-        _X_n_i=[]
-        X_n_i=[]
+        real_n = Ab_prime.shape[0]
+        X_n_i = np.zeros(real_n)
         for k in range(real_n):
-            _X_n_i.append(gaussian_elimination_i(real_n - k))
-        for k in range(real_n):
-            X_n_i.append(_X_n_i[real_n - k])
-    X_n.append(X_n_i)
+            row = real_n - 1 - k   #下の行から順に解く
+            X_n_i[row] = gaussian_elimination_i(row, X_n_i, Ab_prime)
+        X_n_list.append(X_n_i)
+    X_n.append(X_n_list)
 
 
 
