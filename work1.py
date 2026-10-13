@@ -1,5 +1,5 @@
 import numpy as np
-from generateA_b import A_b
+from generateA_b import A_b, N
 import time
 
 
@@ -13,9 +13,9 @@ def forward_eraser(A, b): #行列A、ベクトルbを引数にとる
     for k in range(n-1):
         A_kMaxIndex = k + np.argmax(np.abs(A_b[k:, k]))
         if A_kMaxIndex != k:
-            A_b[A_kMaxIndex, :], A_b[k, :] = A_b[k, :].copy(), A_b[A_kMaxIndex, :].copy()  
-        for i in range(k+1, n):
-            A_b[i, :] = A_b[i, :] - (A_b[i, k] / A_b[k, k]) * A_b[k, :]
+            A_b[A_kMaxIndex, :], A_b[k, :] = A_b[k, :].copy(), A_b[A_kMaxIndex, :].copy()
+        #k+1行目以降をまとめて消去：各行iから (a_ik / a_kk) * (k行目) を引く
+        A_b[k+1:, :] -= np.outer(A_b[k+1:, k] / A_b[k, k], A_b[k, :])
     return A_b
 
 # A= A_b[N.index(n)][i][0] b= A_b[N.index(n)][i][1]となる
@@ -24,10 +24,8 @@ def forward_eraser(A, b): #行列A、ベクトルbを引数にとる
 
 def gaussian_elimination_i(i, x, Ab_prime):   #i番目の解を求める（x[i+1:]は求め済み）
     n = Ab_prime.shape[0]
-    sum_aijxj = 0
-    for j in range(i+1, n):
-        sum_aijxj += Ab_prime[i][j] * x[j]
-    x_i = (1/Ab_prime[i][i]) * (Ab_prime[i][n] - sum_aijxj)
+    sum_aijxj = Ab_prime[i, i+1:n] @ x[i+1:]   #Σ_{j=i+1}^{n} a_ij x_j を内積で計算
+    x_i = (1/Ab_prime[i, i]) * (Ab_prime[i, n] - sum_aijxj)
     return x_i
 
 
@@ -77,4 +75,6 @@ for n_index in range(len(Ab)):
         real_X_n_list.append(np.linalg.solve(A, b))
     real_X_n.append(real_X_n_list)
 
-
+# n, 残差ノルム, 相対誤差, 計算時間 を列にして保存
+data = np.column_stack((N, X_n_res, X_n_rel_res, X_n_performance_time))
+np.savetxt("result.dat", data, header="n residual relative_error time", fmt="%.6e")
