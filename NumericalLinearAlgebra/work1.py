@@ -1,5 +1,5 @@
 import numpy as np
-from generateA_b import A_b, N
+from NumericalLinearAlgebra.generateA_b import A_b, N
 import time
 
 
