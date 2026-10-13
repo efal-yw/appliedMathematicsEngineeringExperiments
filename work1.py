@@ -52,16 +52,17 @@ for n_index in range(len(Ab)):
             row = real_n - 1 - k   #下の行から順に解く
             X_n_i[row] = gaussian_elimination_i(row, X_n_i, Ab_prime)
         X_n_list.append(X_n_i)
-        end= time.perf_counter
+        end= time.perf_counter()
         performance_time_i = end - start
         X_n_performance_time_i.append(performance_time_i)
 
         r = b - A @ X_n_i                         # 残差ベクトル（@ は行列×ベクトルの積）
         res_norm = np.linalg.norm(r)           # 2ノルム
-        rel_res  = res_norm / np.linalg.norm(b)  # 相対残差
+        x_true = np.linalg.solve(A, b)         # 真の解の代わりにnumpyの解を使う
+        rel_err = np.linalg.norm(X_n_i - x_true) / np.linalg.norm(x_true)  # 相対誤差
 
         X_n_res_i.append(res_norm)
-        X_n_rel_res_i.append(rel_res)
+        X_n_rel_res_i.append(rel_err)
     X_n_performance_time.append(np.average(X_n_performance_time_i))
     X_n_res.append(np.average(X_n_res_i))
     X_n_rel_res.append(np.average(X_n_rel_res_i))
