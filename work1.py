@@ -28,7 +28,7 @@ def gaussian_elimination_i(i, x, Ab_prime):   #i番目の解を求める（x[i+1
     return x_i
 
 
-X_n =[]
+X_n =[] #解いたやつ
 
 for n_index in range(len(Ab)):
     X_n_list = []
@@ -43,7 +43,16 @@ for n_index in range(len(Ab)):
             row = real_n - 1 - k   #下の行から順に解く
             X_n_i[row] = gaussian_elimination_i(row, X_n_i, Ab_prime)
         X_n_list.append(X_n_i)
+        
     X_n.append(X_n_list)
 
+real_X_n = []  #numpyにより解いた解
+for n_index in range(len(Ab)):
+    real_X_n_list = []
+    for i in range(100):
+        A = Ab[n_index][i][0]
+        b = Ab[n_index][i][1]
+        real_X_n_list.append(np.linalg.solve(A, b))
+    real_X_n.append(real_X_n_list)
 
 
