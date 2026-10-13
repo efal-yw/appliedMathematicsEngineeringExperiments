@@ -1,4 +1,6 @@
 import numpy as np
+import sys
+sys.path.append("../..")
 from NumericalLinearAlgebra.generateA_b import A_b, N
 import time
 

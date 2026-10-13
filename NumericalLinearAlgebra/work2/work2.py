@@ -1,4 +1,6 @@
 import numpy as np
+import sys
+sys.path.append("../..")
 from NumericalLinearAlgebra.generateA_b import A_b, N
 import time
 
@@ -77,7 +79,6 @@ for n_index in range(len(Ab)):
     X_n_res.append(np.average(X_n_res_i))
     X_n_rel_res.append(np.average(X_n_rel_res_i))
     X_n.append(X_n_list)
-    print(f"n={N[n_index]}: residual={X_n_res[-1]:.3e}, relative_error={X_n_rel_res[-1]:.3e}, time={X_n_performance_time[-1]:.3e}")
 
 # n, 残差ノルム, 相対誤差, 計算時間 を列にして保存
 data = np.column_stack((N, X_n_res, X_n_rel_res, X_n_performance_time))
