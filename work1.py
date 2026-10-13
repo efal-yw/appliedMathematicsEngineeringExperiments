@@ -1,7 +1,10 @@
 import numpy as np
 from generateA_b import A_b
+import time
+
 
 Ab = A_b.copy()
+
 
 #前進消去する関数を定義。返り値は拡大係数行列A_b
 def forward_eraser(A, b): #行列A、ベクトルbを引数にとる
@@ -29,10 +32,16 @@ def gaussian_elimination_i(i, x, Ab_prime):   #i番目の解を求める（x[i+1
 
 
 X_n =[] #解いたやつ
-
+X_n_performance_time=[]
+X_n_res = [] #残差ノルム　X_n_res[n.index]　各nで平均をとっている
+X_n_rel_res = [] #相対誤差
 for n_index in range(len(Ab)):
     X_n_list = []
+    X_n_performance_time_i = []
+    X_n_res_i = []
+    X_n_rel_res_i = []
     for i in range(100):
+        start = time.perf_counter()
         A = Ab[n_index][i][0]
         b = Ab[n_index][i][1]
         Ab_prime = forward_eraser(A, b)
@@ -43,7 +52,19 @@ for n_index in range(len(Ab)):
             row = real_n - 1 - k   #下の行から順に解く
             X_n_i[row] = gaussian_elimination_i(row, X_n_i, Ab_prime)
         X_n_list.append(X_n_i)
-        
+        end= time.perf_counter
+        performance_time_i = end - start
+        X_n_performance_time_i.append(performance_time_i)
+
+        r = b - A @ X_n_i                         # 残差ベクトル（@ は行列×ベクトルの積）
+        res_norm = np.linalg.norm(r)           # 2ノルム
+        rel_res  = res_norm / np.linalg.norm(b)  # 相対残差
+
+        X_n_res_i.append(res_norm)
+        X_n_rel_res_i.append(rel_res)
+    X_n_performance_time.append(np.average(X_n_performance_time_i))
+    X_n_res.append(np.average(X_n_res_i))
+    X_n_rel_res.append(np.average(X_n_rel_res_i))
     X_n.append(X_n_list)
 
 real_X_n = []  #numpyにより解いた解
