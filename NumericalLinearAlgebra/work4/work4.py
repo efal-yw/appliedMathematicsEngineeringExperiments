@@ -41,3 +41,9 @@ for n in N:
 
 
     
+# n, 残差ノルム, λ1の相対誤差, v1の相対誤差, 計算時間, 反復回数 を1行ずつ保存（平均しない）
+data = []
+for n in N:
+    for a in ans[N.index(n)]:
+        data.append([n, a[6], a[4], a[5], a[8], a[7]])
+np.savetxt("result.dat", data, header="n residual rel_error_lambda rel_error_x time iteration", fmt="%.6e")
