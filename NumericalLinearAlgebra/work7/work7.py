@@ -1,5 +1,5 @@
 import numpy as np
-from generateA_b import A, N
+from generateA import A, N
 import time
 from numba import njit
 
@@ -47,8 +47,8 @@ def QR_speedy(A):
     results = []
     n=len(A)
     for _ in range(n):
-        if n==1: 
-            results.append(A[0,0]) 
+        if n==1:
+            results.append(A[0,0])
             break
         A= QR_forLambdaNN(A)
         lambda_n = A[-1,-1].copy()
@@ -58,5 +58,4 @@ def QR_speedy(A):
     return results
 
 
-
-
+lambda_tildes = [[QR_speedy(a) for a in row] for row in A]
