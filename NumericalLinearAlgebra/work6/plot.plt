@@ -22,7 +22,7 @@ plot "result.dat" using 1:3 with points pt 7 ps 0.5 title "max relative error", 
 
 # 計算時間 (n^3 の参考線つき)
 set output "time.png"
-set ylabel "time [s]"
+set ylabel "time / s"
 stats "result.dat" using 4 every ::0::99 nooutput   # n=10 の100個分の time
 t0 = STATS_mean
 plot "result.dat" using 1:4 with points pt 7 ps 0.5 title "time", \

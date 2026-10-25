@@ -17,7 +17,7 @@ plot "result.dat" using 1:3 with linespoints pt 7 title "relative error"
 
 # 計算時間 (n^3 の参考線つき)
 set output "time.png"
-set ylabel "time [s]"
+set ylabel "time / s"
 stats "result.dat" using 4 every ::0::0 nooutput   # 最初のデータ行 (n=100) の time
 t0 = STATS_min
 plot "result.dat" using 1:4 with linespoints pt 7 title "time", \

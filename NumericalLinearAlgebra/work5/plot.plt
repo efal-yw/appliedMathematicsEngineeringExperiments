@@ -28,7 +28,7 @@ plot "result.dat" using 1:4 with points pt 7 ps 0.5 title "relative error (v_1)"
 
 # 計算時間 (n^3 の参考線つき, 初めのLU分解が O(n^3) のため)
 set output "time.png"
-set ylabel "time [s]"
+set ylabel "time / s"
 stats "result.dat" using 5 every ::0::99 nooutput   # n=50 の100個分の time
 t0 = STATS_mean
 plot "result.dat" using 1:5 with points pt 7 ps 0.5 title "time", \
