@@ -1,0 +1,452 @@
+\documentclass{jarticle}
+\usepackage[dvipdfmx]{graphicx} % Required for inserting images (platex + dvipdfmx でPNGを読むため)
+\usepackage{amsmath} % For \tag command
+\graphicspath{{../NumericalLinearAlgebra/}} % 図は NumericalLinearAlgebra/workN/ から直接読む
+% 図のパネル: \panel{画像}{記号}  （1つの figure 環境に複数の図を (a)(b)... で並べる．第1章 1.2.5）
+\newcommand{\panel}[2]{%
+  \begin{minipage}[t]{0.48\linewidth}\centering
+    \includegraphics[width=\linewidth,bb=0 0 800 600]{#1}\\ {\small (#2)}
+  \end{minipage}}
+
+\begin{document}
+
+\begin{center}
+
+    {\huge  数理工学実験 レポート} \\[2cm]
+    {\LARGE べき乗法およびQR法を用いた固有値計算} \\[2cm]
+
+    \begin{large}
+    \begin{tabular}{ll}
+        {実験実施年月日：} & 2026年10月06日 \\
+        {実験実施場所：} &  工学部総合校舎数理計算機室\\
+        {レポート提出年月日：} & 2026年10月26日 \\[1cm]
+        学年・学生番号： & 工学部　2回生 \\
+                       & 1029379268 \\
+        氏名： & 脇田悠希
+    \end{tabular}
+    \end{large}
+
+\end{center}
+
+\newpage
+
+\section{はじめに}
+数値線形代数の主要テーマである連立 1 次方程
+式や行列固有値問題は、科学技術計算から日常生
+活まで、ありとあらゆるところに現れる基本問題
+である。数値線形代数の基礎的な知識と技術を身につけることを目的として、 連立 1
+次方程式
+Ax = b (2.1)
+および行列固有値問題
+Ax = λx (2.2)
+の数値解法を実装し，数値実験によりその性能を
+調べる
+
+\section{原理・方法}
+\subsection{消去法}
+Gaussの消去法では、
+\begin{equation}
+    A x = b
+    \tag{2.1}
+\end{equation}
+の解を次のように求める。
+
+(1) 拡大係数行列$(A,b)$を行基本変形により行階段形$(A\prime,b\prime)$にする。
+(2) 方程式$A\prime x=b\prime$の解を下の漸化式(1)により求める。
+\begin{equation}
+    x_i = \frac{1}{a'_{i,i}} \left( b'_i - \sum_{j=i+1}^{n} a'_{i,j} x_j \right)
+\end{equation}
+なお、行基本変形は以下。
+\subsection{前進消去による行基本変形}
+次の手続きを $k = 1, 2, . . . , n-1$ の順に繰り
+返して拡大係数行列 $(A, b)$ を逐次更新する．
+
+(1) 第 $k$ 列の下三角成分 $a_{k,k}, ..., a_{n,k}$ の中か
+らノルムが最大のものをひとつ選ぶ．（この $a_{i,k}$ をピ
+ボットという．）
+
+(2) $i \neq k$ ならば第 $k$ 行と第 $i$ 行を入れ替える．
+
+(3)（$a_{k+1,k}, ... , a_{n,k}$ がすべて $0$ になるように）各 $k + 1 \leq i \leq n$に対して第 $i$ 行から第 $k$行の$\frac{a_{i,k}}{a_{k,k},}$倍を引く．
+
+\section{実験方法}
+\section{結果}
+\subsection{課題１}
+ 消去法により, 連立 1 次方程式 (2.1) の
+解を求める数値実験を行う．n = 100, 200, 400,
+800 のそれぞれに対して，n 次の行列 A とベク
+トル b のペアをランダムに 100 個生成し，各ペア
+に対して連立 1 次方程式 (2.1) の数値解を求めよ．
+\begin{equation}
+    A x = b
+    \tag{2.1}
+\end{equation}
+
+\begin{equation}
+ \frac{|| x -     \tilde{x}||}{||x||}
+ \tag{2.4}
+\end{equation}
+\begin{equation}
+ ||b-A\tilde{x}||
+ \tag{2.5}
+\end{equation}
+\subsubsection{}
+各 n に対して，数値解 $\tilde{x}$ の残差ノルム (2.5)，
+相対誤差 (2.4)，計算時間をそれぞれプロット
+せよ. ただし真の解は不明なので，MATLAB
+や Python における数値計算パッケージで得られるものを真の解として用いよ
+.
+
+\begin{figure}[htbp]
+    \centering
+    \panel{work1/residual.png}{a}\hfill
+    \panel{work1/relative_error.png}{b}\\[8pt]
+    \panel{work1/time.png}{c}
+    \caption{消去法（部分ピボット選択付き）で求めた連立 1 次方程式 (2.1) の数値解 $\tilde{x}$ の (a) 残差ノルム (2.5)，(b) 相対誤差 (2.4)，(c) 計算時間 $t$．横軸は次数 $n$ で両対数表示．各 $n=100, 200, 400, 800$ について，成分が区間 $[0,1)$ の一様乱数である $A, b$ を100組生成し，その平均値をプロットした．ノルムは 2 ノルム，真の解 $x$ には NumPy の \texttt{numpy.linalg.solve} の解を用いた．(c) の点線は $n^3$ に比例する参考線である．}
+    \label{fig:work1}
+\end{figure}
+
+\begin{table}[htbp]
+    \centering
+    \caption{消去法で求めた数値解 $\tilde{x}$ の残差ノルム (2.5)，相対誤差 (2.4) および計算時間 $t$（各 $n$ で100組の平均値）}
+    \label{tab:work1}
+    \begin{tabular}{rccc}
+        \hline
+        $n$ & 残差ノルム & 相対誤差 & $t$/s \\
+        \hline
+        100 & $8.54\times10^{-14}$ & $3.31\times10^{-14}$ & $1.75\times10^{-3}$ \\
+        200 & $4.51\times10^{-13}$ & $8.01\times10^{-14}$ & $5.12\times10^{-3}$ \\
+        400 & $1.96\times10^{-12}$ & $2.99\times10^{-13}$ & $7.53\times10^{-2}$ \\
+        800 & $6.66\times10^{-12}$ & $7.13\times10^{-13}$ & $5.05\times10^{-1}$ \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection{}
+数値解の精度と次数 n の関係について考察
+せよ．
+\subsubsection{}
+計算時間と次数 n の関係について考察せよ．
+
+\clearpage
+\subsection{課題２}
+課題 1 と同じ内容を，LU 分解による解法に替えて行え．
+
+\subsubsection{}
+各 n に対して，数値解 $\tilde{x}$ の残差ノルム (2.5)，
+相対誤差 (2.4)，計算時間をそれぞれプロット
+せよ. ただし真の解は不明なので，MATLAB
+や Python における数値計算パッケージで得られるものを真の解として用いよ．
+
+\begin{figure}[htbp]
+    \centering
+    \panel{work2/residual.png}{a}\hfill
+    \panel{work2/relative_error.png}{b}\\[8pt]
+    \panel{work2/time.png}{c}
+    \caption{LU 分解（部分ピボット選択付き）による解法で求めた連立 1 次方程式 (2.1) の数値解 $\tilde{x}$ の (a) 残差ノルム (2.5)，(b) 相対誤差 (2.4)，(c) 計算時間 $t$．横軸は次数 $n$ で両対数表示．各 $n=100, 200, 400, 800$ について，成分が区間 $[0,1)$ の一様乱数である $A, b$ を100組生成し，その平均値をプロットした．ノルムは 2 ノルム，真の解 $x$ には NumPy の \texttt{numpy.linalg.solve} の解を用いた．(c) の点線は $n^3$ に比例する参考線である．}
+    \label{fig:work2}
+\end{figure}
+
+\begin{table}[htbp]
+    \centering
+    \caption{LU分解による解法で求めた数値解 $\tilde{x}$ の残差ノルム (2.5)，相対誤差 (2.4) および計算時間 $t$（各 $n$ で100組の平均値）}
+    \label{tab:work2}
+    \begin{tabular}{rccc}
+        \hline
+        $n$ & 残差ノルム & 相対誤差 & $t$/s \\
+        \hline
+        100 & $8.17\times10^{-14}$ & $3.28\times10^{-14}$ & $2.42\times10^{-3}$ \\
+        200 & $4.46\times10^{-13}$ & $8.06\times10^{-14}$ & $7.51\times10^{-3}$ \\
+        400 & $1.86\times10^{-12}$ & $3.00\times10^{-13}$ & $4.77\times10^{-2}$ \\
+        800 & $6.81\times10^{-12}$ & $7.16\times10^{-13}$ & $5.11\times10^{-1}$ \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection{}
+数値解の精度と次数 n の関係について考察せよ．
+\subsubsection{}
+計算時間と次数 n の関係について考察せよ．
+
+\clearpage
+\subsection{課題３}
+連立 1 次方程式に対する消去法と LU 分解による解法を，
+数値解の精度と計算速度の観点から比較せよ．
+その際，理論的な計算量（加減算，乗算，除算それぞれの回数）についても考察せよ．
+
+\begin{table}[htbp]
+    \centering
+    \footnotesize\setlength{\tabcolsep}{2pt}
+    \caption{消去法（課題1）と LU 分解による解法（課題2）の比較．同じ100組の $A, b$ に対する平均値}
+    \label{tab:work3}
+    \begin{tabular}{rcccccc}
+        \hline
+        & \multicolumn{2}{c}{残差ノルム (2.5)} & \multicolumn{2}{c}{相対誤差 (2.4)} & \multicolumn{2}{c}{$t$/s} \\
+        $n$ & 消去法 & LU分解 & 消去法 & LU分解 & 消去法 & LU分解 \\
+        \hline
+        100 & $8.54\times10^{-14}$ & $8.17\times10^{-14}$ & $3.31\times10^{-14}$ & $3.28\times10^{-14}$ & $1.75\times10^{-3}$ & $2.42\times10^{-3}$ \\
+        200 & $4.51\times10^{-13}$ & $4.46\times10^{-13}$ & $8.01\times10^{-14}$ & $8.06\times10^{-14}$ & $5.12\times10^{-3}$ & $7.51\times10^{-3}$ \\
+        400 & $1.96\times10^{-12}$ & $1.86\times10^{-12}$ & $2.99\times10^{-13}$ & $3.00\times10^{-13}$ & $7.53\times10^{-2}$ & $4.77\times10^{-2}$ \\
+        800 & $6.66\times10^{-12}$ & $6.81\times10^{-12}$ & $7.13\times10^{-13}$ & $7.16\times10^{-13}$ & $5.05\times10^{-1}$ & $5.11\times10^{-1}$ \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\clearpage
+\subsection{課題４}
+べき乗法により，行列 $A$ の第 1 固有値と第 1 固有ベクトルを求める数値実験を行う．
+$n = 50, 100, 200, 400$ のそれぞれに対して，$n$ 次行列 $A$ をランダムに 100 個生成し，
+各 $A$ の第 1 固有値と第 1 固有ベクトルを数値的に求めよ．
+\begin{equation}
+ \frac{|\lambda_i - \tilde{\lambda}_i|}{|\lambda_i|}
+ \tag{2.10}
+\end{equation}
+\begin{equation}
+ \frac{\| v_i - \tilde{v}_i \|}{\| v_i \|}
+ \tag{2.11}
+\end{equation}
+\begin{equation}
+ \| \tilde{\lambda}_i \tilde{v}_i - A \tilde{v}_i \|
+ \tag{2.12}
+\end{equation}
+
+注意 2.5.1　べき乗法や QR 法の収束性は，与えられた行列の固有値の絶対値がすべて相異なる場合に保証される．
+しかし，ランダムな実行列は共役な複素固有値を含む可能性があり，その場合にはアルゴリズムの収束が保証されない．
+そこで，生成した実行列 $A$ にその転置 $A^T$ を加えるなどして実対称行列を生成し，
+それを用いて実験するなどの工夫をすると良い．
+
+\subsubsection{}
+各 $n$ に対して，数値的に求めた第 1 固有値 $\tilde{\lambda}_1$ と第 1 固有ベクトル $\tilde{v}_1$ に対する
+固有方程式の残差ノルム (2.12)，$\tilde{\lambda}_1$ の相対誤差 (2.10)，$\tilde{v}_1$ の相対誤差 (2.11)，
+計算時間，収束までに要した反復回数をそれぞれプロットせよ．
+
+\begin{figure}[htbp]
+    \centering
+    \panel{work4/residual.png}{a}\hfill
+    \panel{work4/relative_error_lambda.png}{b}\\[8pt]
+    \panel{work4/relative_error_x.png}{c}\hfill
+    \panel{work4/time.png}{d}\\[8pt]
+    \panel{work4/iteration.png}{e}
+    \caption{べき乗法で求めた第 1 固有値 $\tilde{\lambda}_1$ と第 1 固有ベクトル $\tilde{v}_1$ の (a) 残差ノルム (2.12)，(b) $\tilde{\lambda}_1$ の相対誤差 (2.10)，(c) $\tilde{v}_1$ の相対誤差 (2.11)，(d) 計算時間 $t$，(e) 反復回数．横軸は次数 $n$ で，(a)--(d) は両対数，(e) は横軸のみ対数で表示．各 $n=50, 100, 200, 400$ について，成分が区間 $[0,1)$ の一様乱数である行列 $A$ を100個生成した．点は各行列に対する値，赤線は各 $n$ での平均値である．初期ベクトルは $x_0=(1,\ldots,1)^{\mathsf T}$，第 $k$ 反復での $\lambda_1$ の近似値を $\mu_k$ として，収束判定は $|\mu_k-\mu_{k-1}|/|\mu_k|<10^{-6}$ とした．真値には NumPy の \texttt{numpy.linalg.eig} で求めた値を用いた．(d) の点線は $n^2$ に比例する参考線である．}
+    \label{fig:work4}
+\end{figure}
+
+\begin{table}[htbp]
+    \centering
+    \footnotesize\setlength{\tabcolsep}{3pt}
+    \caption{べき乗法で求めた $\tilde{\lambda}_1, \tilde{v}_1$ の残差ノルム (2.12)，相対誤差 (2.10), (2.11)，計算時間 $t$ および反復回数（各 $n$ で100個の平均値）}
+    \label{tab:work4}
+    \begin{tabular}{rccccc}
+        \hline
+        & 残差ノルム & $\tilde{\lambda}_1$ の相対誤差 & $\tilde{v}_1$ の相対誤差 & & \\
+        $n$ & (2.12) & (2.10) & (2.11) & $t$/s & 反復回数 \\
+        \hline
+        50 & $2.38\times10^{-6}$ & $9.27\times10^{-8}$ & $1.47\times10^{-8}$ & $2.36\times10^{-4}$ & 6.60 \\
+        100 & $3.16\times10^{-6}$ & $6.31\times10^{-8}$ & $3.82\times10^{-9}$ & $8.82\times10^{-5}$ & 6.02 \\
+        200 & $9.74\times10^{-6}$ & $9.71\times10^{-8}$ & $4.29\times10^{-9}$ & $1.51\times10^{-4}$ & 5.54 \\
+        400 & $5.67\times10^{-6}$ & $2.83\times10^{-8}$ & $1.13\times10^{-9}$ & $3.31\times10^{-4}$ & 5.10 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection{}
+$\tilde{\lambda}_1, \tilde{v}_1$ の精度と次数 $n$ の関係について考察せよ．
+\subsubsection{}
+計算時間と次数 $n$ の関係について考察せよ．
+
+\clearpage
+\subsection{課題５}
+べき乗法と逆反復法を組み合わせて，第 1 固有値と第 1 固有ベクトルを数値的に求めるための算法として，
+べき乗法より高速なものをつくれ．
+つくった算法とべき乗法を精度と速度の面から比較せよ．
+
+\begin{figure}[htbp]
+    \centering
+    \panel{work5/residual.png}{a}\hfill
+    \panel{work5/relative_error_lambda.png}{b}\\[8pt]
+    \panel{work5/relative_error_x.png}{c}\hfill
+    \panel{work5/time.png}{d}\\[8pt]
+    \panel{work5/iteration.png}{e}
+    \caption{課題 5 の算法（べき乗法を 1 回行って得た $\mu_0$ を $\sigma$ とし，$A-\sigma I$ を LU 分解して逆反復法を行う）で求めた $\tilde{\lambda}_1, \tilde{v}_1$ の (a) 残差ノルム (2.12)，(b) $\tilde{\lambda}_1$ の相対誤差 (2.10)，(c) $\tilde{v}_1$ の相対誤差 (2.11)，(d) 計算時間 $t$，(e) 反復回数．横軸は次数 $n$ で，(a)--(d) は両対数，(e) は横軸のみ対数で表示．各 $n=50, 100, 200, 400$ について，成分が区間 $[0,1)$ の一様乱数である行列 $A$ を100個生成した（課題 4 と同じ行列）．点は各行列に対する値，赤線は各 $n$ での平均値である．収束判定は $\tilde{\lambda}_1$ の相対変化量が $10^{-6}$ 未満とした．真値には NumPy の \texttt{numpy.linalg.eig} で求めた値を用いた．(d) の点線は $n^3$ に比例する参考線である．}
+    \label{fig:work5}
+\end{figure}
+
+\begin{table}[htbp]
+    \centering
+    \footnotesize\setlength{\tabcolsep}{3pt}
+    \caption{課題5の算法で求めた $\tilde{\lambda}_1, \tilde{v}_1$ の残差ノルム (2.12)，相対誤差 (2.10), (2.11)，計算時間 $t$ および反復回数（各 $n$ で100個の平均値）}
+    \label{tab:work5}
+    \begin{tabular}{rccccc}
+        \hline
+        & 残差ノルム & $\tilde{\lambda}_1$ の相対誤差 & $\tilde{v}_1$ の相対誤差 & & \\
+        $n$ & (2.12) & (2.10) & (2.11) & $t$/s & 反復回数 \\
+        \hline
+        50 & $2.43\times10^{-6}$ & $2.64\times10^{-8}$ & $9.34\times10^{-8}$ & $3.36\times10^{-3}$ & 4.40 \\
+        100 & $5.13\times10^{-6}$ & $1.48\times10^{-8}$ & $9.99\times10^{-8}$ & $6.37\times10^{-3}$ & 3.77 \\
+        200 & $5.44\times10^{-6}$ & $9.93\times10^{-9}$ & $5.18\times10^{-8}$ & $1.06\times10^{-2}$ & 3.32 \\
+        400 & $6.97\times10^{-6}$ & $5.65\times10^{-9}$ & $3.31\times10^{-8}$ & $6.94\times10^{-2}$ & 3.07 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+    \centering
+    \footnotesize\setlength{\tabcolsep}{3pt}
+    \caption{べき乗法（課題4）と課題5の算法の精度の比較．同じ100個の $A$ に対する平均値}
+    \label{tab:work5_acc}
+    \begin{tabular}{rcccccc}
+        \hline
+        & \multicolumn{2}{c}{残差ノルム (2.12)} & \multicolumn{2}{c}{$\tilde{\lambda}_1$ の相対誤差 (2.10)} & \multicolumn{2}{c}{$\tilde{v}_1$ の相対誤差 (2.11)} \\
+        $n$ & べき乗法 & 課題5 & べき乗法 & 課題5 & べき乗法 & 課題5 \\
+        \hline
+        50 & $2.38\times10^{-6}$ & $2.43\times10^{-6}$ & $9.27\times10^{-8}$ & $2.64\times10^{-8}$ & $1.47\times10^{-8}$ & $9.34\times10^{-8}$ \\
+        100 & $3.16\times10^{-6}$ & $5.13\times10^{-6}$ & $6.31\times10^{-8}$ & $1.48\times10^{-8}$ & $3.82\times10^{-9}$ & $9.99\times10^{-8}$ \\
+        200 & $9.74\times10^{-6}$ & $5.44\times10^{-6}$ & $9.71\times10^{-8}$ & $9.93\times10^{-9}$ & $4.29\times10^{-9}$ & $5.18\times10^{-8}$ \\
+        400 & $5.67\times10^{-6}$ & $6.97\times10^{-6}$ & $2.83\times10^{-8}$ & $5.65\times10^{-9}$ & $1.13\times10^{-9}$ & $3.31\times10^{-8}$ \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+    \centering
+    \footnotesize\setlength{\tabcolsep}{3pt}
+    \caption{べき乗法（課題4）と課題5の算法の計算時間 $t$ と反復回数の比較．同じ100個の $A$ に対する平均値}
+    \label{tab:work5_spd}
+    \begin{tabular}{rcccc}
+        \hline
+        & \multicolumn{2}{c}{$t$/s} & \multicolumn{2}{c}{反復回数} \\
+        $n$ & べき乗法 & 課題5 & べき乗法 & 課題5 \\
+        \hline
+        50 & $2.36\times10^{-4}$ & $3.36\times10^{-3}$ & 6.60 & 4.40 \\
+        100 & $8.82\times10^{-5}$ & $6.37\times10^{-3}$ & 6.02 & 3.77 \\
+        200 & $1.51\times10^{-4}$ & $1.06\times10^{-2}$ & 5.54 & 3.32 \\
+        400 & $3.31\times10^{-4}$ & $6.94\times10^{-2}$ & 5.10 & 3.07 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\clearpage
+\subsection{課題６}
+QR 法により，行列 $A$ の全ての固有値を求める数値実験を行う．
+$n = 10, 20, 40, 80$ のそれぞれに対して，$n$ 次行列 $A$ をランダムに 100 個生成し，
+各 $A$ の固有値 $\lambda_1, \ldots, \lambda_n$ を数値的に求めよ．
+
+\subsubsection{}
+各 $n$ に対して，数値的に求めた固有値 $\tilde{\lambda}_1, \ldots, \tilde{\lambda}_n$ に対する
+固有方程式の残差ノルムの最大値
+\[
+ \max_{1 \leq i \leq n} \| (A - \tilde{\lambda}_i I) v_i \|,
+\]
+相対誤差の最大値
+\[
+ \max_{1 \leq i \leq n} \frac{|\lambda_i - \tilde{\lambda}_i|}{|\lambda_i|},
+\]
+計算時間，収束までに要した反復回数をそれぞれプロットせよ．
+ただし真の固有値 $\lambda_i$ と固有ベクトル $v_i$ は不明なので，
+MATLAB や Python における数値計算パッケージで得られるものを真の固有値および固有ベクトルとして用いよ．
+
+\begin{figure}[htbp]
+    \centering
+    \panel{work6/residual.png}{a}\hfill
+    \panel{work6/relative_error.png}{b}\\[8pt]
+    \panel{work6/time.png}{c}\hfill
+    \panel{work6/iteration.png}{d}\\[8pt]
+    \caption{QR 法（修正 Gram--Schmidt 法による QR 分解，シフト・減次なし）で求めた固有値 $\tilde{\lambda}_1,\ldots,\tilde{\lambda}_n$ の (a) 残差ノルムの最大値 $\max_i\|(A-\tilde{\lambda}_iI)v_i\|_2$，(b) 相対誤差の最大値 $\max_i|\lambda_i-\tilde{\lambda}_i|/|\lambda_i|$，(c) 計算時間 $t$，(d) 反復回数．横軸は次数 $n$ で両対数表示．各 $n=10, 20, 40, 80$ について，成分が区間 $[0,1)$ の一様乱数である行列 $B$ を100個生成し，$A=(B+B^{\mathsf T})/2$ と対称化して用いた．真の固有値 $\lambda_i$ と固有ベクトル $v_i$ には NumPy の \texttt{numpy.linalg.eigh} で求めた値を用いた．点は各行列に対する値，赤線は各 $n$ での平均値，(c) の点線は $n^3$ に比例する参考線である．収束判定は第 $k$ 反復の行列 $A_k$ の狭義下三角成分の絶対値の最大値が $10^{-6}$ 未満，反復回数の上限は $10^4$ とした．}
+    \label{fig:work6}
+\end{figure}
+
+\begin{table}[htbp]
+    \centering
+    \footnotesize\setlength{\tabcolsep}{3pt}
+    \caption{QR法で求めた固有値に対する残差ノルムの最大値，相対誤差の最大値，計算時間 $t$ および反復回数（各 $n$ で100個の平均値）}
+    \label{tab:work6}
+    \begin{tabular}{rcccc}
+        \hline
+        $n$ & 残差ノルムの最大値 & 相対誤差の最大値 & $t$/s & 反復回数 \\
+        \hline
+        10 & $6.03\times10^{-7}$ & $7.08\times10^{-7}$ & $5.03\times10^{-2}$ & $1.40\times10^{3}$ \\
+        20 & $3.68\times10^{-2}$ & $4.07\times10^{-2}$ & $4.84\times10^{-1}$ & $2.64\times10^{3}$ \\
+        40 & $2.17\times10^{-1}$ & $1.94\times10^{-1}$ & $2.33\times10^{1}$ & $6.56\times10^{3}$ \\
+        80 & $1.36$ & $6.15\times10^{-1}$ & $8.39\times10^{2}$ & $9.45\times10^{3}$ \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection{}
+$\tilde{\lambda}_1, \ldots, \tilde{\lambda}_n$ の精度と次数 $n$ の関係について考察せよ．
+\subsubsection{}
+計算時間と次数 $n$ の関係について考察せよ．
+
+\clearpage
+\subsection{課題７}
+シフトと減次を用いて QR 法を高速化せよ．
+つくった算法と元々の QR 法を精度と速度の面から比較せよ．
+
+\begin{figure}[htbp]
+    \centering
+    \panel{work7/residual.png}{a}\hfill
+    \panel{work7/relative_error.png}{b}\\[8pt]
+    \panel{work7/time.png}{c}\hfill
+    \panel{work7/iteration.png}{d}\\[8pt]
+    \caption{シフトと減次を用いた QR 法で求めた固有値 $\tilde{\lambda}_1,\ldots,\tilde{\lambda}_n$ の (a) 残差ノルムの最大値 $\max_i\|(A-\tilde{\lambda}_iI)v_i\|_2$，(b) 相対誤差の最大値 $\max_i|\lambda_i-\tilde{\lambda}_i|/|\lambda_i|$，(c) 計算時間 $t$，(d) 反復回数．横軸は次数 $n$ で両対数表示．各 $n=10, 20, 40, 80$ について，成分が区間 $[0,1)$ の一様乱数である行列 $B$ を100個生成し，$A=(B+B^{\mathsf T})/2$ と対称化して用いた（課題 6 と同じ行列）．真の固有値 $\lambda_i$ と固有ベクトル $v_i$ には NumPy の \texttt{numpy.linalg.eigh} で求めた値を用いた．点は各行列に対する値，赤線は各 $n$ での平均値，(c) の点線は $n^3$ に比例する参考線である．シフト量 $\sigma$ には各反復で現在の行列の右下成分を用い，最下行の非対角成分の絶対値の最大値が $10^{-6}$ 未満になった時点で減次した．反復回数は全段の QR 反復の合計である．}
+    \label{fig:work7}
+\end{figure}
+
+\begin{table}[htbp]
+    \centering
+    \footnotesize\setlength{\tabcolsep}{3pt}
+    \caption{シフトと減次を用いたQR法で求めた固有値に対する残差ノルムの最大値，相対誤差の最大値，計算時間 $t$ および反復回数（各 $n$ で100個の平均値）}
+    \label{tab:work7}
+    \begin{tabular}{rcccc}
+        \hline
+        $n$ & 残差ノルムの最大値 & 相対誤差の最大値 & $t$/s & 反復回数 \\
+        \hline
+        10 & $2.40\times10^{-12}$ & $2.35\times10^{-11}$ & $1.53\times10^{-4}$ & 18.1 \\
+        20 & $3.82\times10^{-12}$ & $2.42\times10^{-11}$ & $8.87\times10^{-4}$ & 38.1 \\
+        40 & $1.07\times10^{-11}$ & $7.90\times10^{-11}$ & $5.60\times10^{-3}$ & 74.7 \\
+        80 & $2.31\times10^{-11}$ & $1.36\times10^{-10}$ & $4.71\times10^{-2}$ & 148 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+    \centering
+    \footnotesize\setlength{\tabcolsep}{3pt}
+    \caption{QR法（課題6）とシフトと減次を用いたQR法（課題7）の精度の比較．同じ100個の $A$ に対する平均値}
+    \label{tab:work7_acc}
+    \begin{tabular}{rcccc}
+        \hline
+        & \multicolumn{2}{c}{残差ノルムの最大値} & \multicolumn{2}{c}{相対誤差の最大値} \\
+        $n$ & 課題6 & 課題7 & 課題6 & 課題7 \\
+        \hline
+        10 & $6.03\times10^{-7}$ & $2.40\times10^{-12}$ & $7.08\times10^{-7}$ & $2.35\times10^{-11}$ \\
+        20 & $3.68\times10^{-2}$ & $3.82\times10^{-12}$ & $4.07\times10^{-2}$ & $2.42\times10^{-11}$ \\
+        40 & $2.17\times10^{-1}$ & $1.07\times10^{-11}$ & $1.94\times10^{-1}$ & $7.90\times10^{-11}$ \\
+        80 & $1.36$ & $2.31\times10^{-11}$ & $6.15\times10^{-1}$ & $1.36\times10^{-10}$ \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+    \centering
+    \footnotesize\setlength{\tabcolsep}{3pt}
+    \caption{QR法（課題6）とシフトと減次を用いたQR法（課題7）の計算時間 $t$ と反復回数の比較．同じ100個の $A$ に対する平均値}
+    \label{tab:work7_spd}
+    \begin{tabular}{rcccc}
+        \hline
+        & \multicolumn{2}{c}{$t$/s} & \multicolumn{2}{c}{反復回数} \\
+        $n$ & 課題6 & 課題7 & 課題6 & 課題7 \\
+        \hline
+        10 & $5.03\times10^{-2}$ & $1.53\times10^{-4}$ & $1.40\times10^{3}$ & 18.1 \\
+        20 & $4.84\times10^{-1}$ & $8.87\times10^{-4}$ & $2.64\times10^{3}$ & 38.1 \\
+        40 & $2.33\times10^{1}$ & $5.60\times10^{-3}$ & $6.56\times10^{3}$ & 74.7 \\
+        80 & $8.39\times10^{2}$ & $4.71\times10^{-2}$ & $9.45\times10^{3}$ & 148 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\clearpage
+\section{考察・議論}
+\section{結論}
+\section{参考文献}
+\end{document}
