@@ -1,7 +1,7 @@
 \documentclass{jarticle}
 \usepackage[dvipdfmx]{graphicx} % Required for inserting images (platex + dvipdfmx でPNGを読むため)
 \usepackage{amsmath} % For \tag command
-\graphicspath{{../NumericalLinearAlgebra/}} % 図は NumericalLinearAlgebra/workN/ から直接読む
+  \graphicspath{{figs/}} % 図は figs/workN/ から読む（Overleaf には figs フォルダごとアップロード）
 % 図のパネル: \panel{画像}{記号}  （1つの figure 環境に複数の図を (a)(b)... で並べる．第1章 1.2.5）
 \newcommand{\panel}[2]{%
   \begin{minipage}[t]{0.48\linewidth}\centering
@@ -52,9 +52,10 @@ Gaussの消去法では、
 の解を次のように求める。
 
 (1) 拡大係数行列$(A,b)$を行基本変形により行階段形$(A\prime,b\prime)$にする。
-(2) 方程式$A\prime x=b\prime$の解を下の漸化式(1)により求める。
+(2) 方程式$A\prime x=b\prime$の解を下の漸化式\eqref{eq:backsub}により求める。
 \begin{equation}
     x_i = \frac{1}{a'_{i,i}} \left( b'_i - \sum_{j=i+1}^{n} a'_{i,j} x_j \right)
+    \label{eq:backsub}
 \end{equation}
 なお、行基本変形は以下。
 \subsection{前進消去による行基本変形}
@@ -68,6 +69,19 @@ Gaussの消去法では、
 (2) $i \neq k$ ならば第 $k$ 行と第 $i$ 行を入れ替える．
 
 (3)（$a_{k+1,k}, ... , a_{n,k}$ がすべて $0$ になるように）各 $k + 1 \leq i \leq n$に対して第 $i$ 行から第 $k$行の$\frac{a_{i,k}}{a_{k,k},}$倍を引く．
+
+\subsection{数値解の精度の評価}
+数値解の精度は次の量で評価した．
+  \begin{itemize}
+      \item 残差ノルム
+
+数値解$\tilde{x}$の残差ノルムは$\tilde{x}$をそれが満たす方程式$f(x)=0$があったとき、$\|f(\tilde{x})\|$で定義される。つまり、元の方程式への当てはまり度合を表し、$\tilde{x}$が真の解$x$に等しければ$0$となる。
+
+      \item 相対誤差
+
+      
+      真の解 $x$ と数値解 $\tilde{x}$ の差を $x$ の大きさで割った量$\frac{\| x - \tilde{x} \|}{\| x \|}$で定義され、相対的な誤差を示す。
+  \end{itemize}
 
 \section{実験方法}
 \section{結果}
@@ -125,6 +139,13 @@ Gaussの消去法では、
 \subsubsection{}
 数値解の精度と次数 n の関係について考察
 せよ．
+
+残差ノルムをみると、すべて$10^{-11}$を下回っている。また、$n=100$と$n=800$の2点から求めた両対数グラフの傾きは
+\[
+    \frac{\log(6.66\times10^{-12}/8.54\times10^{-14})}{\log(800/100)} \approx 2.10
+\]
+であり、残差ノルムはおおむね$n^2$程度で増加する傾向がある。
+
 \subsubsection{}
 計算時間と次数 n の関係について考察せよ．
 
@@ -165,6 +186,12 @@ Gaussの消去法では、
 
 \subsubsection{}
 数値解の精度と次数 n の関係について考察せよ．
+
+残差ノルムをみると、すべて$10^{-11}$を下回っている。また、$n=100$と$n=800$の2点から求めた両対数グラフの傾きは
+\[
+    \frac{\log(6.81\times10^{-12}/8.17\times10^{-14})}{\log(800/100)} \approx 2.13
+\]
+であり、残差ノルムはおおむね$n^2$程度で増加する傾向がある。
 \subsubsection{}
 計算時間と次数 n の関係について考察せよ．
 
@@ -251,6 +278,12 @@ $n = 50, 100, 200, 400$ のそれぞれに対して，$n$ 次行列 $A$ をラ�
 
 \subsubsection{}
 $\tilde{\lambda}_1, \tilde{v}_1$ の精度と次数 $n$ の関係について考察せよ．
+
+残差ノルムをみると、すべて$10^{-5}$を下回っている。また、$n=50$と$n=400$の2点から求めた両対数グラフの傾きは
+\[
+    \frac{\log(5.67\times10^{-6}/2.38\times10^{-6})}{\log(400/50)} \approx 0.42
+\]
+であり、残差ノルムの$n$に対する増加は緩やかである。ただし$n=200$で最大となっており、単調には増加していない。
 \subsubsection{}
 計算時間と次数 $n$ の関係について考察せよ．
 
@@ -374,6 +407,12 @@ MATLAB や Python における数値計算パッケージで得られるもの�
 
 \subsubsection{}
 $\tilde{\lambda}_1, \ldots, \tilde{\lambda}_n$ の精度と次数 $n$ の関係について考察せよ．
+
+残差ノルムの最大値をみると、$n=10$では$6.03\times10^{-7}$であるが$n=80$では$1.36$に達している。$n=10$と$n=80$の2点から求めた両対数グラフの傾きは
+\[
+    \frac{\log(1.36/6.03\times10^{-7})}{\log(80/10)} \approx 7.03
+\]
+であり、残差ノルムの最大値は$n$とともに急激に増加している。
 \subsubsection{}
 計算時間と次数 $n$ の関係について考察せよ．
 
